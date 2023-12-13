@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <title>Outline Access Key Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #fafafa;
+        padding: 20px;
+      }
+    </style>
+</head>
+<body>
+
+    <my-app email="<?= email ?>" accessKey="<?= accessKey ?>" bytes30d="<?= bytes30d ?>"></my-app>
+    <script type="module">
+        // import { LitElement, html, css } from 'https://unpkg.com/lit-element/lit-element.js?module';
+        import {LitElement, html, css} from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js';
+
+        class MyApp extends LitElement {
+          static properties = {
+            email: {type: String},
+            accessKey: {type: String},
+            bytes30d: {type: Number},
+            _agreesToTOS: {type: Boolean, state: true},
+            _copied: {type: Boolean, state: true},
+          };
+          static styles = css`
+            h1, h2 {
+              color: #333;
+            }
+            p {
+              color: #666;
+            }
+            input[type="checkbox"] {
+              margin-right: 10px;
+            }
+            button {
+              background-color: #4CAF50;
+              color: white;
+              border: none;
+              padding: 10px 20px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              margin: 5px 2px;
+              cursor: pointer;
+              border-radius: 4px;
+            }
+            button:disabled {
+              background-color: #cccccc;
+            }
+            .container {
+              background-color: white;
+              word-break: break-word;
+              max-width: 600px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              border-radius: 8px;
+              padding: 5px;
+            }
+            .row {
+              display: flex;
+              flex-direction: row;
+            }
+            code {
+              display: block;
+            }
+            .pad {
+              padding: 15px;
+            }
+            .copied {
+              margin: 10px;
+            }
+          `;
+          render() {
+            return html`
+              <h1>my.freeoutlineserver.net</h1>
+              <p>Welcome <b>${this.email}</b></p>
+              ${this.accessKey ?
+                html`
+                <h2>Usage</h2>
+                <p>You have used <b>${formatBytes(this.bytes30d)}</b> in the last 30 days</p>
+                <h2>Your Access Key</h2>
+                <div class="container row"
+                  ><img class="qr" src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(this.accessKey)}" alt="QR code">
+                  <div class="pad">
+                    <code><a target="_blank" href=${this.accessKey}>${this.accessKey}</a></code>
+                    <br>
+                    <button @click="${this.copyAccessKey}">Copy Access Key</button><span class="copied" ?hidden=${!this._copied}>Copied!</span>
+                  </div>
+                </div>
+                <!-- button @click="${this.deleteKey}">Delete Access Key</button -->`
+                :
+                html`<p><input type="checkbox" @change="${(e) => this._agreesToTOS = e.target.checked}" .checked="${this._agreesToTOS}"></input>I agree to not abuse the server with illegal activity or unfair bandwidth usage</p>
+                <button ?disabled="${!this._agreesToTOS}" @click="${this.generateKey}">Create Access Key</button>`
+              }
+            `;
+          }
+  
+          copyAccessKey() {
+            navigator.clipboard.writeText(this.accessKey).then(() => this._copied = true);
+          }
+          deleteKey() {
+            google.script.run.withSuccessHandler(() => {this.accessKey = ''}).deleteUserKey();
+          }
+
+          generateKey() {
+            google.script.run.withSuccessHandler((key) => {this.accessKey = key}).createUserKey();
+          }
+        }
+        customElements.define('my-app', MyApp);
+        
+        async function writeToClipboard(text) {
+          return navigator.clipboard.writeText(text)
+        }
+
+        function formatBytes(num) {
+          if (num < 1024) {
+              return num + ' B';
+          } else if (num < 1024 * 1024) {
+              return (num / 1024).toFixed(1) + ' KB';
+          } else if (num < 1024 * 1024 * 1024) {
+              return (num / 1024 / 1024).toFixed(1) + ' MB';
+          } else {
+              return (num / 1024 / 1024 / 1024).toFixed(1) + ' GB';
+          }
+        }
+    </script>
+</body>
+</html>
