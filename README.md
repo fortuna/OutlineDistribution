@@ -4,7 +4,32 @@ This project provides a system to distribute access keys of Outline VPN services
 
 ## Deployment
 
-TODO
+### Create Apps Script project
+
+```
+clasp create --type "webapp" --title "Outline Distribution"
+```
+
+### Configure project settings
+
+Open the project on the browser:
+
+```
+clasp open
+```
+
+In the Project Settings, under Script Properties, create a `API_URL` property with the value of the server management API URL.
+
+### Deploy
+
+```
+clasp deploy
+```
+
+### Open the web app
+```
+clasp open --webapp
+```
 
 ## Development
 
@@ -15,3 +40,14 @@ Use [`clasp clone`](https://developers.google.com/apps-script/guides/clasp#clone
 clasp clone 17x29dO2HTBdvBMZxYI_k5K3lcY7jZtvY1E4ErUFJ2abzYGpXFs5Uzftn
 ```
 
+To open the project on the browser:
+
+```
+clasp open
+```
+
+## TO DO
+
+- Use shared storage
+- Dynamic Key
+- Session Key
