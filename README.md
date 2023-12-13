@@ -4,6 +4,8 @@ This project provides a system to distribute access keys of Outline VPN services
 
 ## Deployment
 
+We manage the code with the [clasp command line tool](https://developers.google.com/apps-script/guides/clasp).
+
 ### Create Apps Script project
 
 ```
@@ -32,8 +34,6 @@ clasp open --webapp
 ```
 
 ## Development
-
-We manage the code with the [clasp command line tool](https://developers.google.com/apps-script/guides/clasp)
 
 Use [`clasp clone`](https://developers.google.com/apps-script/guides/clasp#clone_an_existing_project) with the project id to create the .clasp.json file:
 ```
