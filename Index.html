@@ -14,7 +14,7 @@
 </head>
 <body>
 
-    <my-app email="<?= email ?>" accessKey="<?= accessKey ?>" bytes30d="<?= bytes30d ?>"></my-app>
+    <my-app></my-app>
     <script type="module">
         // import { LitElement, html, css } from 'https://unpkg.com/lit-element/lit-element.js?module';
         import {LitElement, html, css} from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js';
@@ -65,7 +65,7 @@
               display: flex;
               flex-direction: row;
             }
-            code {
+            .block {
               display: block;
             }
             .pad {
@@ -78,21 +78,21 @@
           render() {
             return html`
               <h1>my.freeoutlineserver.net</h1>
-              <p>Welcome <b>${this.email}</b></p>
+              <p>Welcome!</p>
+              <p>Each key can only be used in one device, since they get regenerated on connection.
+              Please create one key for each of your devices. If you would like to share access,
+              please send your friends to <code>https://my.freeoutlineserver.net</code>.</p>
               ${this.accessKey ?
                 html`
-                <h2>Usage</h2>
-                <p>You have used <b>${formatBytes(this.bytes30d)}</b> in the last 30 days</p>
                 <h2>Your Access Key</h2>
                 <div class="container row"
                   ><img class="qr" src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(this.accessKey)}" alt="QR code">
                   <div class="pad">
-                    <code><a target="_blank" href=${this.accessKey}>${this.accessKey}</a></code>
+                    <code class='block'><a target="_blank" href=${this.accessKey}>${this.accessKey}</a></code>
                     <br>
                     <button @click="${this.copyAccessKey}">Copy Access Key</button><span class="copied" ?hidden=${!this._copied}>Copied!</span>
                   </div>
-                </div>
-                <!-- button @click="${this.deleteKey}">Delete Access Key</button -->`
+                </div>`
                 :
                 html`<p><input type="checkbox" @change="${(e) => this._agreesToTOS = e.target.checked}" .checked="${this._agreesToTOS}"></input>I agree to not abuse the server with illegal activity or unfair bandwidth usage</p>
                 <button ?disabled="${!this._agreesToTOS}" @click="${this.generateKey}">Create Access Key</button>`
@@ -103,12 +103,9 @@
           copyAccessKey() {
             navigator.clipboard.writeText(this.accessKey).then(() => this._copied = true);
           }
-          deleteKey() {
-            google.script.run.withSuccessHandler(() => {this.accessKey = ''}).deleteUserKey();
-          }
 
           generateKey() {
-            google.script.run.withSuccessHandler((key) => {this.accessKey = key}).createUserKey();
+            google.script.run.withSuccessHandler((key) => {this.accessKey = key}).createDeviceKey();
           }
         }
         customElements.define('my-app', MyApp);
