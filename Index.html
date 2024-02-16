@@ -30,6 +30,7 @@
           static styles = css`
             h1, h2 {
               color: #333;
+              overflow-wrap: break-word;
             }
             p {
               color: #666;
@@ -56,28 +57,34 @@
             .container {
               background-color: white;
               word-break: break-word;
-              max-width: 600px;
               box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
               border-radius: 8px;
               padding: 5px;
+              width: fit-content;
             }
             .row {
               display: flex;
               flex-direction: row;
+              flex-wrap: wrap;
             }
             .block {
               display: block;
             }
             .pad {
               padding: 15px;
+              max-width: 400px;
             }
             .copied {
               margin: 10px;
             }
+            .qr {
+              max-height: 200px;
+              max-width: 200px;
+            }
           `;
           render() {
             return html`
-              <h1>my.freeoutlineserver.net</h1>
+              <h1>My Free Outline Server</h1>
               <p>Welcome!</p>
               <p>Each key can only be used in one device, since they get regenerated on connection.
               Please create one key for each of your devices. If you would like to share access,
@@ -86,12 +93,12 @@
                 html`
                 <h2>Your Access Key</h2>
                 <div class="container row"
-                  ><img class="qr" src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(this.accessKey)}" alt="QR code">
-                  <div class="pad">
+                  ><div class="pad">
                     <code class='block'><a target="_blank" href=${this.accessKey}>${this.accessKey}</a></code>
                     <br>
                     <button @click="${this.copyAccessKey}">Copy Access Key</button><span class="copied" ?hidden=${!this._copied}>Copied!</span>
-                  </div>
+                  </div
+                  ><img class="qr" src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(this.accessKey)}" alt="QR code">
                 </div>`
                 :
                 html`<p><input type="checkbox" @change="${(e) => this._agreesToTOS = e.target.checked}" .checked="${this._agreesToTOS}"></input>I agree to not abuse the server with illegal activity or unfair bandwidth usage</p>
