@@ -4,10 +4,11 @@
 
 const MANAGEMENT_API_URL = PropertiesService.getScriptProperties().getProperty('API_URL');
 const TOKEN_SECRET = PropertiesService.getScriptProperties().getProperty('TOKEN_SECRET');
+const SERVER_NAME = PropertiesService.getScriptProperties().getProperty('SERVER_NAME');
 
 function doGet(e) {
-    if (e.pathInfo && e.pathInfo.startsWith("access_key/")) {
-      return serveDynamicKey(e.pathInfo.substr("access_key/".length))
+    if (e.parameter?.deviceToken) {
+      return serveDynamicKey(e.parameter?.deviceToken)
     }
     return serveHome();
 }
@@ -30,14 +31,14 @@ function createDeviceKey() {
   const signature = Utilities.base64EncodeWebSafe(
     Utilities.computeHmacSha256Signature(encodedPayload, TOKEN_SECRET)
   );
-  const token = encodedPayload + '.' + signature;
-  const deviceKey = `${ScriptApp.getService().getUrl()}/access_key/${token}`.replace(/^https:/, 'ssconf:');
+  const deviceToken = encodedPayload + '.' + signature;
+  const deviceKey = `${ScriptApp.getService().getUrl()}?deviceToken=${deviceToken}#${encodeURIComponent(SERVER_NAME)}`.replace(/^https:/, 'ssconf:');
   return deviceKey;
 }
 
-function serveDynamicKey(token) {
+function serveDynamicKey(deviceToken) {
   // const token = "eyJzdWIiOiI3Yzc3N2ZjMC0zYTFkLTQ1YTItYWE2NC1hOWYzY2QwM2I1NTUiLCJpYXQiOjE3MDc4OTA1NDIzODMsImV4cCI6MTcxMDM5MjU0MjM4M30=.hgofD3_Nufeb2Pp3_rAvgPxUg-EwxxqTzO6U3wBjU5o=";
-  const parts = token.split('.');
+  const parts = deviceToken.split('.');
   if (parts.length !== 2) {
     throw new Error('The token is invalid: bad format');
   }
@@ -66,8 +67,7 @@ function serveDynamicKey(token) {
     } catch {}
     // https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/Jigsaw-Code/outline-server/master/src/shadowbox/server/api.yml#tag/Access-Key/paths/~1access-keys/put
     const response = apiFetch('access-keys/' + deviceId, {method: 'put'});
-    const responseText = response.getContentText();
-
+    responseText = response.getContentText();
   } finally {
     lock.releaseLock();
   }
