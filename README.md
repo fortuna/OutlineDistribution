@@ -45,9 +45,3 @@ To open the project on the browser:
 ```
 clasp open
 ```
-
-## TO DO
-
-- Use shared storage
-- Dynamic Key
-- Session Key
