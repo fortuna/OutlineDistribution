@@ -63,6 +63,7 @@ function serveDynamicKey(deviceToken) {
   const payload = JSON.parse(Utilities.newBlob(payloadBytes).getDataAsString())
   Logger.log(payload);
   if (Date.now() >= payload.exp) {
+    // TODO(fortuna): Output a custom error instead: https://www.reddit.com/r/outlinevpn/wiki/index/dynamic_access_keys/#wiki_custom_errors.
     throw new Error('The token is invalid: expired');
   }
   const deviceId = payload.sub;
