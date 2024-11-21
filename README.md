@@ -6,10 +6,11 @@ This project provides a lightweight system for distributing access keys to Outli
 The implementation is straightforward, consisting of only [~80 lines of code](https://github.com/fortuna/OutlineDistribution/blob/main/Code.js). It defines two web endpoints:
 
 1. **Home Page**  
-   A welcoming interface with a form to generate dynamic access keys.
+   A welcoming interface with a form to generate dynamic access keys. The dynamic access includes a token that encodes a device id and expiration date.
 
 2. **Dynamic Key Endpoint**  
-   This endpoint interacts with the [Outline Server API](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/Jigsaw-Code/outline-server/master/src/shadowbox/server/api.yml). It creates a static access key upon the first connection using the dynamic key.
+   This endpoint interacts with the [Outline Server API](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/Jigsaw-Code/outline-server/master/src/shadowbox/server/api.yml). It creates a static access key upon the first connection using the dynamic key. It uses the device id to replace the previous static key,
+   and the expiration data to fail on expired keys. 
 
 ### Live Demo
 You can try the service live at: [https://my.freeoutlineserver.net](https://my.freeoutlineserver.net)
